@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CppStarter: Spell Check",
+      "detail": "Run CSpell on all files in the workspace",
+      "icon": {
+        "id": "tools",
+        "color": "terminal.ansiBlue"
+      },
+      "type": "shell",
+      "command": "cspell",
+      "args": ["lint", "--dot", "**/*"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": {
+        "applyTo": "allDocuments",
+        "fileLocation": "autoDetect",
+        "owner": "cspell task",
+        "severity": "info",
+        "source": "cspell",
+        "pattern": [
+          {
+            "regexp": "(^[^:]+):(\\d+):(\\d+)\\s*-\\s*(.*$)",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        ]
+      }
+    },
+    {
+      "label": "CppStarter: Markdownlint",
+      "detail": "Run Markdownlint on all Markdown files in the workspace",
+      "icon": {
+        "id": "tools",
+        "color": "terminal.ansiBlue"
+      },
+      "type": "shell",
+      "command": "markdownlint",
+      "args": ["--ignore", "build/", "--dot", "--fix", "."],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": {
+        "applyTo": "allDocuments",
+        "fileLocation": "relative",
+        "owner": "markdownlint task",
+        "severity": "warning",
+        "source": "markdownlint",
+        "pattern": {
+          "regexp": "(^[^:]+):(\\d+)\\s*(MD\\d+)\\/[^\\s]+\\s+(.*$)",
+          "file": 1,
+          "line": 2,
+          "code": 3,
+          "message": 4
+        }
+      }
+    },
+    {
+      "label": "CppStarter: Prettier Format",
+      "detail": "Run Prettier on all files in the workspace",
+      "icon": {
+        "id": "tools",
+        "color": "terminal.ansiBlue"
+      },
+      "type": "shell",
+      "command": "prettier",
+      "args": ["--write", "."],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CppStarter: Pipeline",
+      "detail": "Run static analysis pipeline",
+      "icon": {
+        "id": "tools",
+        "color": "terminal.ansiMagenta"
+      },
+      "dependsOn": [
+        "CppStarter: Spell Check",
+        "CppStarter: Markdownlint",
+        "CppStarter: Prettier Format"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

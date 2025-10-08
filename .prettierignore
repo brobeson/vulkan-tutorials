@@ -1,0 +1,20 @@
+# Adapted from https://stackoverflow.com/a/70715829
+
+# Ignore everything
+*
+
+# Include files by extension
+!*.json
+!*.md
+!*.yaml
+!*.yml
+
+# Include files that don't use file extensions
+.clang-format
+.clang-tidy
+
+# Check subdirectories
+!*/
+
+# Except the build directory
+build/

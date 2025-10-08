@@ -1,0 +1,19 @@
+# cspell:words altera llvmlibc
+#
+# -altera: I don't work with OpenCL.
+# -llvmlibc: I don't work in the LLVM code base.
+# -readability-identifier-length: Too subjective;
+#   I don't mind short identifiers in many cases.
+---
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  *,
+  -altera-*,
+  -llvmlibc-*,
+  -readability-identifier-length
+WarningsAsErrors: "*"
+HeaderFilterRegex: ""
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+...

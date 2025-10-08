@@ -1,0 +1,15 @@
+{
+  // cspell:ignore esbenp
+  "cmake.configureArgs": ["-D", "CppStarter_DEV_BUILD:BOOL=on"],
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "cSpell.checkOnlyEnabledFileTypes": false,
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "githubIssues.issueBranchTitle": "${issueNumber}-${sanitizedIssueTitle}",
+  "[cmake]": {
+    "editor.formatOnSave": false
+  },
+  "[json][markdown][yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

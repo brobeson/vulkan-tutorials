@@ -1,0 +1,5 @@
+{
+  "version": "0.2",
+  "words": ["brobeson", "Cppcheck", "ctest", "valgrind"],
+  "ignorePaths": [".git/*", "build/*"]
+}

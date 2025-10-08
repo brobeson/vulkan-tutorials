@@ -1,0 +1,19 @@
+name: Feature Request
+description: Request a new feature in CppStarter
+labels: [enhancement]
+assignees: [brobeson]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of CppStarter are you using?
+    validations:
+      required: true
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature Description
+      description: Describe the new feature. Provide as much detail as you can.
+    validations:
+      required: true

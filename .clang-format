@@ -1,0 +1,45 @@
+---
+BasedOnStyle:  LLVM
+AlignAfterOpenBracket: AlwaysBreak
+AlignArrayOfStructures: Right
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: All
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+DeriveLineEnding: false
+EmptyLineBeforeAccessModifier: Always
+IncludeBlocks: Merge
+IncludeCategories:
+  - Regex: '^".*"'
+    Priority: 1
+  - Regex: '^<.*\.h(pp)?>'
+    Priority: 2
+  - Regex: '^<.*>'
+    Priority: 3
+IncludeIsMainRegex: "(_test)?$"
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: false
+InsertBraces: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+NamespaceIndentation: All
+PackConstructorInitializers: NextLine
+PointerAlignment: Left
+QualifierAlignment: Left
+SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 5
+SortIncludes: CaseInsensitive
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpacesBeforeTrailingComments: 2
+TabWidth: 2
+UseCRLF: false
+---
