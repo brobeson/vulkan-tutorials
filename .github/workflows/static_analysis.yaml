@@ -20,4 +20,4 @@ jobs:
     name: C++ Code Quality
     uses: brobeson/CppWorkflow/.github/workflows/cpp_static_analysis.yaml@main
     with:
-      configure-definitions: -D CppStarter_DEV_BUILD:BOOL=on
+      configure-definitions: -D vulkan-tutorials_DEV_BUILD:BOOL=on

@@ -1,8 +1,8 @@
-# Contributing to CppStarter
+# Contributing to vulkan-tutorials
 
-## Building and Testing CppStarter
+## Building and Testing vulkan-tutorials
 
-CppStarter requires [CMake](https://cmake.org) to build.
+vulkan-tutorials requires [CMake](https://cmake.org) to build.
 The basic build & test process is to configure the build system, build the software, and run the tests:
 
 ```bash
@@ -15,22 +15,22 @@ Check the [`cmake`](https://cmake.org/cmake/help/latest/manual/cmake.1.html) and
 
 ### CMake Configuration Options
 
-CppStarter provides CMake configuration options to control the build system.
+vulkan-tutorials provides CMake configuration options to control the build system.
 
-- `CppStarter_DEV_BUILD`
+- `vulkan-tutorials_DEV_BUILD`
   - **Type** `BOOL`
   - **Default Value** `false`
   - **Description**
     This option controls the build system for consumer vs. developer builds.
-    When `false`, CppStarter configures a consumer build.
+    When `false`, vulkan-tutorials configures a consumer build.
     Consumer builds disable strict compiler warnings & errors, tests, etc.
-    When `true`, CppStarter configures a developer build.
+    When `true`, vulkan-tutorials configures a developer build.
     Developer builds enable strict compiler warnings, build the tests, etc.
-  - **Example** `cmake -D CppStarter_DEV_BUILD:BOOL=on -B build/`
+  - **Example** `cmake -D vulkan-tutorials_DEV_BUILD:BOOL=on -B build/`
 
 ### Tests
 
-CppStarter uses [Catch2](https://github.com/catchorg/catch2) as a testing framework and [CTest](https://cmake.org) as a test manager and runner.
+vulkan-tutorials uses [Catch2](https://github.com/catchorg/catch2) as a testing framework and [CTest](https://cmake.org) as a test manager and runner.
 
 At configure time, CMake runs these steps:
 
