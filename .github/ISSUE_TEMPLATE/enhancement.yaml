@@ -1,5 +1,5 @@
 name: Feature Request
-description: Request a new feature in CppStarter
+description: Request a new feature in vulkan-tutorials
 labels: [enhancement]
 assignees: [brobeson]
 body:
@@ -7,7 +7,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of CppStarter are you using?
+      description: What version of vulkan-tutorials are you using?
     validations:
       required: true
   - type: textarea

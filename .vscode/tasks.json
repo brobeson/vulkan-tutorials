@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "CppStarter: Spell Check",
+      "label": "vulkan-tutorials: Spell Check",
       "detail": "Run CSpell on all files in the workspace",
       "icon": {
         "id": "tools",
@@ -32,7 +32,7 @@
       }
     },
     {
-      "label": "CppStarter: Markdownlint",
+      "label": "vulkan-tutorials: Markdownlint",
       "detail": "Run Markdownlint on all Markdown files in the workspace",
       "icon": {
         "id": "tools",
@@ -58,7 +58,7 @@
       }
     },
     {
-      "label": "CppStarter: Prettier Format",
+      "label": "vulkan-tutorials: Prettier Format",
       "detail": "Run Prettier on all files in the workspace",
       "icon": {
         "id": "tools",
@@ -73,16 +73,16 @@
       "problemMatcher": []
     },
     {
-      "label": "CppStarter: Pipeline",
+      "label": "vulkan-tutorials: Pipeline",
       "detail": "Run static analysis pipeline",
       "icon": {
         "id": "tools",
         "color": "terminal.ansiMagenta"
       },
       "dependsOn": [
-        "CppStarter: Spell Check",
-        "CppStarter: Markdownlint",
-        "CppStarter: Prettier Format"
+        "vulkan-tutorials: Spell Check",
+        "vulkan-tutorials: Markdownlint",
+        "vulkan-tutorials: Prettier Format"
       ],
       "problemMatcher": []
     }

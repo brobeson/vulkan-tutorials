@@ -1,6 +1,6 @@
 {
   // cspell:ignore esbenp
-  "cmake.configureArgs": ["-D", "CppStarter_DEV_BUILD:BOOL=on"],
+  "cmake.configureArgs": ["-D", "vulkan-tutorials_DEV_BUILD:BOOL=on"],
   "cmake.buildDirectory": "${workspaceFolder}/build",
   "cSpell.checkOnlyEnabledFileTypes": false,
   "editor.formatOnSave": true,
