@@ -13,6 +13,14 @@ import vulkan_hpp;
 constexpr uint32_t WIDTH{800};
 constexpr uint32_t HEIGHT{600};
 
+const std::vector<const char*> validationLayers{"VK_LAYER_KHRONOS_validation"};
+
+#ifdef NDEBUG
+constexpr bool enableValidationLayers{false};
+#else
+constexpr bool enableValidationLayers{true};
+#endif
+
 class HelloTriangleApplication {
 public:
   void run() {
@@ -49,6 +57,31 @@ private:
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
       .apiVersion = vk::ApiVersion14};
 
+    // Get the required layers.
+    std::vector<const char*> requiredLayers;
+    if (enableValidationLayers) {
+      requiredLayers.assign(validationLayers.begin(), validationLayers.end());
+    }
+
+    // Check if the required layers are supported by the Vulkan implementation.
+    auto layerProperties{context.enumerateInstanceLayerProperties()};
+    if (std::any_of(
+          std::begin(layerProperties),
+          std::end(layerProperties),
+          [&layerProperties](const auto& requiredLayer) {
+            return std::none_of(
+              std::begin(layerProperties),
+              std::end(layerProperties),
+              [requiredLayer](const auto& layerProperty) {
+                return std::strcmp(
+                         layerProperty.layerName, requiredLayer.layerName)
+                    == 0;
+              });
+          })) {
+      throw std::runtime_error(
+        "One or more required layers are not supported!");
+    }
+
     // Get the required instance extensions from GLFW.
     uint32_t glfwExtensionCount{0U};
     auto glfwExtensions{glfwGetRequiredInstanceExtensions(&glfwExtensionCount)};
@@ -72,6 +105,8 @@ private:
 
     vk::InstanceCreateInfo createInfo{
       .pApplicationInfo = &appInfo,
+      .enabledLayerCount = static_cast<uint32_t>(requiredLayers.size()),
+      .ppEnabledLayerNames = requiredLayers.data(),
       .enabledExtensionCount = glfwExtensionCount,
       .ppEnabledExtensionNames = glfwExtensions};
     instance = vk::raii::Instance{context, createInfo};
