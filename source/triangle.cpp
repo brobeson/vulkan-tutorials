@@ -8,6 +8,7 @@ import vulkan_hpp;
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 
 constexpr uint32_t WIDTH{800};
@@ -38,7 +39,109 @@ private:
     window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
   }
 
-  void initVulkan() { createInstance(); }
+  void initVulkan() {
+    createInstance();
+    pickPhysicalDevice();
+  }
+
+  void pickPhysicalDevice() {
+    std::vector<const char*> deviceExtensions = {
+      vk::KHRSwapchainExtensionName,
+      vk::KHRSpirv14ExtensionName,
+      vk::KHRSynchronization2ExtensionName,
+      vk::KHRCreateRenderpass2ExtensionName};
+    auto devices{instance.enumeratePhysicalDevices()};
+    const auto devIter{std::find_if(
+      std::begin(devices),
+      std::end(devices),
+      [&](const vk::raii::PhysicalDevice& device) {
+        auto queueFamilies{device.getQueueFamilyProperties()};
+        bool isSuitable
+          = device.getProperties().apiVersion >= VK_API_VERSION_1_3;
+        const auto qfpIter = std::find_if(
+          std::begin(queueFamilies),
+          std::end(queueFamilies),
+          [](const vk::QueueFamilyProperties& qfp) {
+            return (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
+                != static_cast<vk::QueueFlags>(0);
+          });
+        isSuitable = isSuitable && (qfpIter != queueFamilies.end());
+        auto extensions{device.enumerateDeviceExtensionProperties()};
+        bool found{true};
+        for (const auto& extension : deviceExtensions) {
+          auto extensionIter = std::find_if(
+            std::begin(extensions),
+            std::end(extensions),
+            [extension](const auto& ext) {
+              return std::strcmp(ext.extensionName, extension) == 0;
+            });
+          found = found && extensionIter != extensions.end();
+        }
+        isSuitable = isSuitable && found;
+        if (isSuitable) { physicalDevice = device; }
+        return isSuitable;
+      })};
+    if (devIter == devices.end()) {
+      throw std::runtime_error("failed to find a suitable GPU!");
+    }
+    /*
+    if (devices.empty()) {
+      throw std::runtime_error("failed to find GPUs with Vulkan support!");
+    }
+    std::multimap<int, vk::raii::PhysicalDevice> candidates;
+
+    for (const auto& device : devices) {
+      auto deviceProperties{device.getProperties()};
+      auto deviceFeatures{device.getFeatures()};
+      uint32_t score{0U};
+
+      // Discrete GPUs have a significant performance advantage
+      if (deviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) {
+        score += 1000U;
+      }
+
+      // Maximum possible size of textures affects graphics quality
+      score += deviceProperties.limits.maxImageDimension2D;
+
+      // Application can't function without geometry shaders
+      if (!deviceFeatures.geometryShader) { continue; }
+      candidates.insert(std::make_pair(score, device));
+    }
+
+    // Check if the best candidate is suitable at all
+    if (candidates.rbegin()->first > 0) {
+      physicalDevice = candidates.rbegin()->second;
+    } else {
+      throw std::runtime_error("failed to find a suitable GPU!");
+    }
+      */
+  }
+
+  uint32_t findQueueFamilies(vk::raii::PhysicalDevice physicalDevice) {
+    // find the index of the first queue family that supports graphics
+    auto queueFamilyProperties{physicalDevice.getQueueFamilyProperties()};
+
+    // get the first index into queueFamilyProperties which supports graphics
+    auto graphicsQueueFamilyProperty{std::find_if(
+      std::begin(queueFamilyProperties),
+      std::end(queueFamilyProperties),
+      [](vk::QueueFamilyProperties& qfp) {
+        return qfp.queueFlags & vk::QueueFlagBits::eGraphics;
+      })};
+    return static_cast<uint32_t>(std::distance(
+      queueFamilyProperties.begin(), graphicsQueueFamilyProperty));
+  }
+
+  bool isDeviceSuitable(vk::raii::PhysicalDevice physicalDevice) {
+    auto deviceProperties{physicalDevice.getProperties()};
+    auto deviceFeatures{physicalDevice.getFeatures()};
+    if (
+      deviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu
+      && deviceFeatures.geometryShader) {
+      return true;
+    }
+    return false;
+  }
 
   void mainLoop() {
     while (!glfwWindowShouldClose(window)) { glfwPollEvents(); }
@@ -116,6 +219,7 @@ private:
 
   vk::raii::Context context;
   vk::raii::Instance instance{nullptr};
+  vk::raii::PhysicalDevice physicalDevice{nullptr};
 };
 
 int main() {
