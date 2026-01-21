@@ -42,6 +42,7 @@ private:
   void initVulkan() {
     createInstance();
     pickPhysicalDevice();
+    createLogicalDevice();
   }
 
   void pickPhysicalDevice() {
@@ -215,11 +216,50 @@ private:
     instance = vk::raii::Instance{context, createInfo};
   }
 
+  void createLogicalDevice() {
+    auto queueFamilyProperties{physicalDevice.getQueueFamilyProperties()};
+    auto graphicsIndex = findQueueFamilies(physicalDevice);
+    float queuePriority{0.5f};
+    vk::DeviceQueueCreateInfo deviceQueueCreateInfo{
+      .queueFamilyIndex = graphicsIndex,
+      .queueCount = 1,
+      .pQueuePriorities = &queuePriority};
+    vk::PhysicalDeviceFeatures deviceFeatures;
+
+    // Create a chain of feature structures
+    vk::StructureChain<
+      vk::PhysicalDeviceFeatures2,
+      vk::PhysicalDeviceVulkan13Features,
+      vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>
+      featureChain{
+        {},  // vk::PhysicalDeviceFeatures2 (empty for now)
+        {.dynamicRendering = true},  // Enable dynamic rendering from Vulkan 1.3
+        // Enable extended dynamic state from the extension
+        {.extendedDynamicState = true}};
+
+    std::vector<const char*> deviceExtensions{
+      vk::KHRSwapchainExtensionName,
+      vk::KHRSpirv14ExtensionName,
+      vk::KHRSynchronization2ExtensionName,
+      vk::KHRCreateRenderpass2ExtensionName};
+
+    vk::DeviceCreateInfo deviceCreateInfo{
+      .pNext = &featureChain.get<vk::PhysicalDeviceFeatures2>(),
+      .queueCreateInfoCount = 1,
+      .pQueueCreateInfos = &deviceQueueCreateInfo,
+      .enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size()),
+      .ppEnabledExtensionNames = deviceExtensions.data()};
+    device = vk::raii::Device{physicalDevice, deviceCreateInfo};
+    graphicsQueue = vk::raii::Queue{device, graphicsIndex, 0};
+  }
+
   GLFWwindow* window{nullptr};
 
   vk::raii::Context context;
   vk::raii::Instance instance{nullptr};
   vk::raii::PhysicalDevice physicalDevice{nullptr};
+  vk::raii::Device device{nullptr};
+  vk::raii::Queue graphicsQueue{nullptr};
 };
 
 int main() {
