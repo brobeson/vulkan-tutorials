@@ -25,20 +25,22 @@ constexpr bool enableValidationLayers{true};
 #endif
 
 class HelloTriangleApplication {
-public:
-  void run() {
-    initWindow();
-    initVulkan();
-    mainLoop();
-    cleanup();
-  }
-
 private:
+  GLFWwindow* m_window{nullptr};
+  vk::raii::Context m_context;
+  vk::raii::Instance m_instance{nullptr};
+  vk::raii::PhysicalDevice m_physicalDevice{nullptr};
+  vk::raii::Device m_device{nullptr};
+  vk::raii::Queue m_graphicsQueue{nullptr};
+  vk::raii::Queue m_presentQueue{nullptr};
+  vk::raii::Queue m_queue{nullptr};
+  vk::raii::SurfaceKHR m_surface{nullptr};
+
   void initWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+    m_window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
   }
 
   void initVulkan() {
@@ -54,7 +56,7 @@ private:
       vk::KHRSpirv14ExtensionName,
       vk::KHRSynchronization2ExtensionName,
       vk::KHRCreateRenderpass2ExtensionName};
-    auto devices{instance.enumeratePhysicalDevices()};
+    auto devices{m_instance.enumeratePhysicalDevices()};
     const auto devIter{std::find_if(
       std::begin(devices),
       std::end(devices),
@@ -82,7 +84,7 @@ private:
           found = found && extensionIter != extensions.end();
         }
         isSuitable = isSuitable && found;
-        if (isSuitable) { physicalDevice = device; }
+        if (isSuitable) { m_physicalDevice = device; }
         return isSuitable;
       })};
     if (devIter == devices.end()) {
@@ -114,7 +116,7 @@ private:
 
     // Check if the best candidate is suitable at all
     if (candidates.rbegin()->first > 0) {
-      physicalDevice = candidates.rbegin()->second;
+      m_physicalDevice = candidates.rbegin()->second;
     } else {
       throw std::runtime_error("failed to find a suitable GPU!");
     }
@@ -129,7 +131,7 @@ private:
     for (auto i{0}; i < queueFamilyProperties.size(); ++i) {
       if (
         (queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
-        && physicalDevice.getSurfaceSupportKHR(i, *surface)) {
+        && physicalDevice.getSurfaceSupportKHR(i, *m_surface)) {
         // found a queue family that supports both graphics and presentation
         return i;
       }
@@ -141,7 +143,7 @@ private:
     //   std::end(queueFamilyProperties),
     //   [&physicalDevice](vk::QueueFamilyProperties& qfp) {
     //     return (qfp.queueFlags & vk::QueueFlagBits::eGraphics)
-    //         && physicalDevice.getSurfaceSupport(graphicsIndex, *surface);
+    //         && physicalDevice.getSurfaceSupport(graphicsIndex, *m_surface);
     //   })};
     // return static_cast<uint32_t>(std::distance(
     //   queueFamilyProperties.begin(), graphicsQueueFamilyProperty));
@@ -159,11 +161,11 @@ private:
   }
 
   void mainLoop() {
-    while (!glfwWindowShouldClose(window)) { glfwPollEvents(); }
+    while (!glfwWindowShouldClose(m_window)) { glfwPollEvents(); }
   }
 
   void cleanup() {
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(m_window);
     glfwTerminate();
   }
 
@@ -182,7 +184,7 @@ private:
     }
 
     // Check if the required layers are supported by the Vulkan implementation.
-    auto layerProperties{context.enumerateInstanceLayerProperties()};
+    auto layerProperties{m_context.enumerateInstanceLayerProperties()};
     if (std::any_of(
           std::begin(layerProperties),
           std::end(layerProperties),
@@ -206,7 +208,7 @@ private:
 
     // Check if the required GLFW extensions are supported by the Vulkan
     // implementation.
-    auto extensionProperties{context.enumerateInstanceExtensionProperties()};
+    auto extensionProperties{m_context.enumerateInstanceExtensionProperties()};
     for (uint32_t i{0U}; i < glfwExtensionCount; ++i) {
       if (std::none_of(
             std::begin(extensionProperties),
@@ -227,13 +229,13 @@ private:
       .ppEnabledLayerNames = requiredLayers.data(),
       .enabledExtensionCount = glfwExtensionCount,
       .ppEnabledExtensionNames = glfwExtensions};
-    instance = vk::raii::Instance{context, createInfo};
+    m_instance = vk::raii::Instance{m_context, createInfo};
   }
 
   void createLogicalDevice() {
     // find the index of the first queue family that supports graphics
     std::vector<vk::QueueFamilyProperties> queueFamilyProperties
-      = physicalDevice.getQueueFamilyProperties();
+      = m_physicalDevice.getQueueFamilyProperties();
 
     // get the first index into queueFamilyProperties which supports both
     // graphics and present
@@ -243,7 +245,7 @@ private:
       if (
         (queueFamilyProperties[qfpIndex].queueFlags
          & vk::QueueFlagBits::eGraphics)
-        && physicalDevice.getSurfaceSupportKHR(qfpIndex, *surface)) {
+        && m_physicalDevice.getSurfaceSupportKHR(qfpIndex, *m_surface)) {
         // found a queue family that supports both graphics and present
         queueIndex = qfpIndex;
         break;
@@ -282,27 +284,26 @@ private:
       = static_cast<uint32_t>(requiredDeviceExtension.size()),
       .ppEnabledExtensionNames = requiredDeviceExtension.data()};
 
-    device = vk::raii::Device(physicalDevice, deviceCreateInfo);
-    queue = vk::raii::Queue(device, queueIndex, 0);
+    m_device = vk::raii::Device(m_physicalDevice, deviceCreateInfo);
+    m_queue = vk::raii::Queue(m_device, queueIndex, 0);
   }
 
   void createSurface() {
     VkSurfaceKHR _surface{nullptr};
-    if (glfwCreateWindowSurface(*instance, window, nullptr, &_surface) != 0) {
+    if (
+      glfwCreateWindowSurface(*m_instance, m_window, nullptr, &_surface) != 0) {
       throw std::runtime_error{"failed to create window surface!"};
     }
-    surface = vk::raii::SurfaceKHR{instance, _surface};
+    m_surface = vk::raii::SurfaceKHR{m_instance, _surface};
   }
 
-  GLFWwindow* window{nullptr};
-  vk::raii::Context context;
-  vk::raii::Instance instance{nullptr};
-  vk::raii::PhysicalDevice physicalDevice{nullptr};
-  vk::raii::Device device{nullptr};
-  vk::raii::Queue graphicsQueue{nullptr};
-  vk::raii::Queue presentQueue{nullptr};
-  vk::raii::Queue queue{nullptr};
-  vk::raii::SurfaceKHR surface{nullptr};
+public:
+  void run() {
+    initWindow();
+    initVulkan();
+    mainLoop();
+    cleanup();
+  }
 };
 
 int main() {
