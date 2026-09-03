@@ -1,0 +1,3 @@
+version: "0.2"
+words: [brobeson, Cppcheck, ctest, glfw, renderpass, spirv, swapchain, valgrind]
+ignorePaths: [.git/*, build/*]
