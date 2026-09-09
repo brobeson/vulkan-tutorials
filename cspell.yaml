@@ -1,0 +1,4 @@
+version: "0.2"
+words: ["brobeson", "Cppcheck", "ctest", "valgrind", "glfw"]
+useGitignore: true
+ignorePaths: [FindVulkan.cmake]

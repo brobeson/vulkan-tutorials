@@ -1,6 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
-  #include <vulkan/vulkan_raii.hpp>
+#include <vulkan/vulkan_raii.hpp>
 #else
 import vulkan_hpp;
 #endif
@@ -12,9 +12,11 @@ import vulkan_hpp;
 constexpr uint32_t WIDTH{800};
 constexpr uint32_t HEIGHT{600};
 
-class HelloTriangleApplication {
+class HelloTriangleApplication
+{
 public:
-  void run() {
+  void run()
+  {
     initWindow();
     initVulkan();
     mainLoop();
@@ -22,7 +24,8 @@ public:
   }
 
 private:
-  void initWindow() {
+  void initWindow()
+  {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -31,11 +34,16 @@ private:
 
   void initVulkan() {}
 
-  void mainLoop() {
-    while (!glfwWindowShouldClose(window)) { glfwPollEvents(); }
+  void mainLoop()
+  {
+    while (!glfwWindowShouldClose(window))
+    {
+      glfwPollEvents();
+    }
   }
 
-  void cleanup() {
+  void cleanup()
+  {
     glfwDestroyWindow(window);
     glfwTerminate();
   }
@@ -43,12 +51,16 @@ private:
   GLFWwindow* window{nullptr};
 };
 
-int main() {
+int main()
+{
   HelloTriangleApplication app;
 
-  try {
+  try
+  {
     app.run();
-  } catch (const std::exception& e) {
+  }
+  catch (const std::exception& e)
+  {
     std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
   }
