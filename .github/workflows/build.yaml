@@ -1,0 +1,23 @@
+# cspell:dictionaries bash
+
+name: Build & Test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  projectFiles:
+    name: Project File Quality
+    uses: brobeson/SupportFileQuality/.github/workflows/support_files.yaml@v1
+
+  cpp:
+    name: C++ Quality
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v7
+      - name: C++ Formatting
+        shell: bash --noprofile --norc -O globstar -eo pipefail {0}
+        # cspell:ignore Werror
+        run: clang-format -Werror --dry-run --style=file **/*.[ch]pp
