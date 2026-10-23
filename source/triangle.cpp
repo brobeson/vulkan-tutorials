@@ -1,6 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
-#include <vulkan/vulkan_raii.hpp>
+  #include <vulkan/vulkan_raii.hpp>
 #else
 import vulkan_hpp;
 #endif
@@ -36,10 +36,7 @@ private:
 
   void mainLoop()
   {
-    while (!glfwWindowShouldClose(window))
-    {
-      glfwPollEvents();
-    }
+    while (!glfwWindowShouldClose(window)) { glfwPollEvents(); }
   }
 
   void cleanup()
