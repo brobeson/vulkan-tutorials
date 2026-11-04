@@ -1,0 +1,75 @@
+---
+# Configuration for clang-format 21
+Language: Cpp
+BasedOnStyle: LLVM
+AlignArrayOfStructures: Right
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+BinPackArguments: false
+BinPackLongBracedList: false
+BinPackParameters: OnePerLine
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakTemplateDeclarations: Yes
+CommentPragmas: "^ IWYU pragma:"
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+IncludeBlocks: Merge
+IncludeCategories:
+  # Sort STL headers to the bottom.
+  - Regex: '^<[^\.]*>'
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: "^<.*>"
+    Priority: 2
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: ".*"
+    Priority: 1
+    SortPriority: 0
+    CaseSensitive: false
+IncludeIsMainRegex: "(_test)?$"
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: false
+InsertBraces: true
+InsertNewlineAtEOF: true
+IntegerLiteralSeparator:
+  Binary: 4
+  BinaryMinDigits: 6
+  Decimal: 3
+  DecimalMinDigits: 5
+  Hex: 4
+  HexMinDigits: 6
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false
+LineEnding: LF
+NamespaceIndentation: All
+PackConstructorInitializers: NextLine
+PenaltyReturnTypeOnItsOwnLine: 5000
+PointerAlignment: Left
+QualifierAlignment: Left
+RemoveEmptyLinesInUnwrappedLines: true
+RemoveParentheses: ReturnStatement
+RemoveSemicolon: true
+SeparateDefinitionBlocks: Always
+SortIncludes:
+  Enabled: true
+  IgnoreCase: true
+SortUsingDeclarations: Lexicographic
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+TabWidth: 2
+WrapNamespaceBodyWithEmptyLines: Never
+---
