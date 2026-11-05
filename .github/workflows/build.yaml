@@ -13,12 +13,18 @@ jobs:
 
   cpp:
     name: C++ Quality
+    strategy:
+      matrix:
+        workflow: [debug, release]
     runs-on: ubuntu-26.04
     steps:
       - name: Clone the repository
         uses: actions/checkout@v7
       - name: C++ Formatting
-        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         shell: bash --noprofile --norc -O globstar -eo pipefail {0}
         # cspell:ignore Werror
         run: clang-format -Werror --dry-run --style=file **/*.[ch]pp
+      - name: Install Dependencies
+        run: sudo apt install libglfw3-dev # cspell:ignore libglfw
+      - name: CMake Workflow
+        run: cmake --workflow ${{matrix.workflow}}
