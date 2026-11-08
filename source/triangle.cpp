@@ -17,10 +17,22 @@ import vulkan_hpp;
 
 constexpr uint32_t WIDTH{800};
 constexpr uint32_t HEIGHT{600};
+const std::vector<const char*> g_validationLayers{
+  "VK_LAYER_KHRONOS_validation"};
+
+#ifdef NDEBUG
+constexpr bool ENABLE_VALIDATION_LAYERS{false};
+#else
+constexpr bool ENABLE_VALIDATION_LAYERS{true};
+#endif
 
 class HelloTriangleApplication
 {
 private:
+  GLFWwindow* m_window{nullptr};
+  vk::raii::Context m_context;
+  vk::raii::Instance m_instance{nullptr};
+
   void init_window()
   {
     glfwInit();
@@ -51,6 +63,35 @@ private:
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
       .apiVersion = vk::ApiVersion14};
 
+    // Get the required layers.
+    std::vector<const char*> requiredLayers;
+    if (ENABLE_VALIDATION_LAYERS)
+    {
+      requiredLayers.assign(g_validationLayers.begin(),
+                            g_validationLayers.end());
+    }
+
+    // Check if the required layers are supported by the Vulkan implementation.
+    auto layerProperties{m_context.enumerateInstanceLayerProperties()};
+    if (std::any_of(std::begin(layerProperties),
+                    std::end(layerProperties),
+                    [&layerProperties](const auto& requiredLayer)
+                    {
+                      return std::none_of(
+                        std::begin(layerProperties),
+                        std::end(layerProperties),
+                        [requiredLayer](const auto& layerProperty)
+                        {
+                          return std::strcmp(layerProperty.layerName,
+                                             requiredLayer.layerName)
+                              == 0;
+                        });
+                    }))
+    {
+      throw std::runtime_error(
+        "One or more required layers are not supported!");
+    }
+
     // Get the required instance extensions from GLFW.
     uint32_t glfwExtensionCount{0U};
     auto glfwExtensions{glfwGetRequiredInstanceExtensions(&glfwExtensionCount)};
@@ -76,14 +117,12 @@ private:
 
     vk::InstanceCreateInfo createInfo{
       .pApplicationInfo = &appInfo,
+      .enabledLayerCount = static_cast<uint32_t>(requiredLayers.size()),
+      .ppEnabledLayerNames = requiredLayers.data(),
       .enabledExtensionCount = glfwExtensionCount,
       .ppEnabledExtensionNames = glfwExtensions};
     m_instance = vk::raii::Instance{m_context, createInfo};
   }
-
-  GLFWwindow* m_window{nullptr};
-  vk::raii::Context m_context;
-  vk::raii::Instance m_instance{nullptr};
 
 public:
   void run()
