@@ -1,3 +1,9 @@
 version: "0.2"
 useGitignore: true
-words: [brobeson, glfw, Swapchain, VKAPI]
+words:
+  - brobeson
+  - glfw
+  - Renderpass
+  - Spirv
+  - Swapchain
+  - VKAPI
